@@ -3,11 +3,26 @@ import Spinner from '@/components/spinner';
 import Timer from '@/components/timer';
 
 const url = 'https://icanhazdadjoke.com/';
+const serverUrl = 'http://localhost:8000/jokes';
+// const serverUrl = 'http://localhost:8000/api/price/bitcoin';
+// const serverUrl = 'http://localhost:8000/api/fact/cats';
 
 const Jokes = () => {
   const [joke, setJoke] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [timeToNewJoke, setTimeToNewJoke] = useState(5);
+
+  const getJokeFromServer = async () => {
+    try {
+      const res = await fetch(serverUrl);
+      const data = await res.json();
+      console.log(data);
+      setJoke(data.joke);
+      setIsLoading(false);
+    } catch (error) {
+      console.log('Error has occurred', error);
+    }
+  };
 
   const generateJoke = useCallback(async (): Promise<void> => {
     try {
@@ -26,7 +41,8 @@ const Jokes = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      generateJoke();
+      // generateJoke();
+      getJokeFromServer();
     }, timeToNewJoke * 1000);
     return () => {
       clearInterval(interval);
@@ -58,7 +74,7 @@ const Jokes = () => {
         <div className='flex justify-around'>
           <button
             type='button'
-            onClick={generateJoke}
+            onClick={getJokeFromServer}
             id='jokeBtn'
             className='px-10 py-3 text-base text-white bg-purple-500 border-0 rounded-lg shadow-md cursor-pointer outline-0 focus:ring-2 hover:scale-[101%] active:scale-95'
           >
