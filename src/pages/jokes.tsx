@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useRef, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import Spinner from '@/components/spinner';
 import Timer from '@/components/timer';
 
