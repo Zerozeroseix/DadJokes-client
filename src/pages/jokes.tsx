@@ -41,8 +41,8 @@ const Jokes = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      // generateJoke();
-      getJokeFromServer();
+      generateJoke();
+      // getJokeFromServer();
     }, timeToNewJoke * 1000);
     return () => {
       clearInterval(interval);
@@ -74,7 +74,7 @@ const Jokes = () => {
         <div className='flex justify-around'>
           <button
             type='button'
-            onClick={getJokeFromServer}
+            onClick={generateJoke}
             id='jokeBtn'
             className='px-10 py-3 text-base text-white bg-purple-500 border-0 rounded-lg shadow-md cursor-pointer outline-0 focus:ring-2 hover:scale-[101%] active:scale-95'
           >

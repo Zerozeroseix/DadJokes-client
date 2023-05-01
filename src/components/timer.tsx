@@ -8,13 +8,12 @@ const Timer = (props: any) => {
   }, [props.seconds]);
 
   useEffect(() => {
-    let interval: NodeJS.Timer;
+    let interval!: NodeJS.Timer;
     if (seconds > 0) {
       interval = setInterval(() => {
         setSeconds((prevSeconds: number) => prevSeconds - 1);
       }, 1000);
-    }
-    if (seconds <= 0) {
+    } else {
       clearInterval(interval);
       reset();
     }
