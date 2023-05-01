@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from 'react';
-import Spinner from '@/components/spinner';
 import Timer from '@/components/timer';
+import LoadingPage from '@/components/loadingPage';
 
 const url = 'https://icanhazdadjoke.com/';
 const serverUrl = 'http://localhost:8000/jokes';
@@ -10,7 +10,11 @@ const serverUrl = 'http://localhost:8000/jokes';
 const Jokes = () => {
   const [joke, setJoke] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [timeToNewJoke, setTimeToNewJoke] = useState(5);
+  const [seconds, setSeconds] = useState(5);
+
+  const reset = useCallback(() => {
+    setSeconds(5);
+  }, []);
 
   const getJokeFromServer = async () => {
     try {
@@ -25,6 +29,7 @@ const Jokes = () => {
   };
 
   const generateJoke = useCallback(async (): Promise<void> => {
+    reset();
     try {
       const config = {headers: {Accept: 'application/json'}};
       const res = await fetch(url, config);
@@ -37,27 +42,22 @@ const Jokes = () => {
     } catch (err) {
       console.log('Error has occurred', err);
     }
-  }, []);
+  }, [reset]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      generateJoke();
-      // getJokeFromServer();
-    }, timeToNewJoke * 1000);
-    return () => {
+    let interval!: NodeJS.Timer;
+    if (seconds > 0) {
+      interval = setInterval(() => {
+        setSeconds((prevSeconds: number) => prevSeconds - 1);
+      }, 1000);
+    } else {
       clearInterval(interval);
-    };
-  }, [generateJoke, timeToNewJoke]);
+      generateJoke();
+    }
+    return () => clearInterval(interval);
+  }, [generateJoke, reset, seconds]);
 
-  if (isLoading === true)
-    return (
-      <div className='flex items-center justify-center w-full h-screen overflow-hidden bg-pink-200'>
-        <div className='flex-row items-center justify-center p-5 m-0 space-y-2 '>
-          <p className='text-center'>Loading tons of humour...</p>
-          <Spinner />
-        </div>
-      </div>
-    );
+  if (isLoading) return <LoadingPage />;
 
   return (
     <div className='flex items-center justify-center w-full h-screen p-5 m-0 overflow-hidden bg-pink-200'>
@@ -82,7 +82,7 @@ const Jokes = () => {
           </button>
           <div className='p-2 border-2 rounded-lg shadow-md border-violet-300'>
             <span>Time to the next joke</span>
-            <Timer seconds={timeToNewJoke} />
+            <Timer seconds={seconds} />
           </div>
         </div>
       </div>
